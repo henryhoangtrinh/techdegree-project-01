@@ -128,7 +128,12 @@ var player18: [String: String] = [ /* String to String */
     "Guardian Name" : "Hyman and Rachel Krustofski"
 ]
 //================== Collection of all players data ===================//
-let allPlayers : [[String: String]] = [player1,player2,player3,player4,player5,player6,player7,player8,player9,player10,player11,player12,player13,player14,player15,player16,player17,player18]
+var allPlayers : [[String: String]] = [player1,player2,player3,player4,player5,player6,player7,player8,player9,player10,player11,player12,player13,player14,player15,player16,player17,player18,/*player12 I added this one (player12) to test if the code giving any fatal error but it does not occur any issue, and I do understand what you suggested to my code, thank you for the feedbacks*/]
+
+var teamDragons: [[String: String]] = []
+var teamSharks: [[String:String]] = []
+var teamRaptors: [[String: String]] = []
+let numberOfTeam = [teamDragons,teamRaptors,teamSharks]
 
 //======================================================================//
 
@@ -142,21 +147,41 @@ func sortByExperienced (allPlayers: [[String:String]]) -> (experiencedPlayer : [
         if allPlayer["Experience"] == "YES" {
             experiencedPlayer.append(allPlayer)
         } else if allPlayer["Experience"] == "NO" {
-            inExperiencedPlayer.append(allPlayer)
+           inExperiencedPlayer.append(allPlayer)
         }
     }
     return (experiencedPlayer, inExperiencedPlayer)
 }
 
+
+
 //======================================================================//
 
 //============= Bubble Sort for the height of allPlayers ===============//
-func sortByHeigh (player : [[String: String]]) -> ([[String:String]]) {
+/* I changed a bit here since I wanted 2 different lists of experienced and unexperienced.
+    Therefore, I make 1 function for experienced and another for un-experienced */
+func sortByHeighWithExp (player : [[String: String]]) -> ([[String:String]]) {
     var somePlayers = player
     
     for i in 0..<somePlayers.count {
         for j in 1..<somePlayers.count-i{
             if (somePlayers[j]["height"]! as NSString).doubleValue < (somePlayers[j-1]["height"]! as NSString).doubleValue {
+                let tmp = somePlayers[j-1]
+                somePlayers[j-1] = somePlayers[j]
+                somePlayers[j] = tmp
+            }
+        }
+    }
+    return somePlayers
+}
+//=========== Bubble Sorted for un-Experienced players in reversed order ===============//
+
+func sortByHeighWithNoExp (player : [[String: String]]) -> ([[String:String]]) {
+    var somePlayers = player
+    
+    for i in 0..<somePlayers.count {
+        for j in 1..<somePlayers.count-i{
+            if (somePlayers[j]["height"]! as NSString).doubleValue > (somePlayers[j-1]["height"]! as NSString).doubleValue {
                 let tmp = somePlayers[j-1]
                 somePlayers[j-1] = somePlayers[j]
                 somePlayers[j] = tmp
@@ -171,62 +196,113 @@ func sortByHeigh (player : [[String: String]]) -> ([[String:String]]) {
 
 //== Calculated the players in each team with the average height within 1.5 inches of other team ==//
 //=================== 1. Calculated total players in Team Dragons ================//
-func calculatedPlayers4TeamDragons (experiencePlayers: [[String:String]],inExperiencePlayers: [[String:String]]) -> ([[String:String]]) {
+/* ===== It needs to be the collection of (sorted Experience with sorted Height player)
+                and (sorted No Experience with sorted Height player) ========= */
+
+func calculatedPlayers4TeamDragons (experiencePlayersWithHeight: [[String:String]],inExperiencePlayersWithHeight: [[String:String]]) -> ([[String:String]]) {
     
-    var teamDragons: [[String: String]] = []
-    var experiencePlayerHeight: [[String:String]] = experiencePlayers
-    var inExperiencePlayerHeight: [[String:String]] = inExperiencePlayers
     
+    var experiencePlayerHeight: [[String:String]] = experiencePlayersWithHeight
+    var inExperiencePlayerHeight: [[String:String]] = inExperiencePlayersWithHeight
+    
+    /*
     for i in stride(from: 1, through: sortByExperienced(allPlayers: allPlayers).experiencedPlayer.count, by: sortByExperienced(allPlayers: allPlayers).experiencedPlayer.count / 3){
         experiencePlayerHeight[i-1].updateValue("Team Dragons", forKey: "Team")
         inExperiencePlayerHeight[i+1].updateValue("Team Dragon", forKey: "Team")
         experiencePlayerHeight[i-1].updateValue("March 17 , 1 p.m ", forKey: "Date")
         inExperiencePlayerHeight[i+1].updateValue("March 17 , 1 p.m ", forKey: "Date")
         teamDragons += [experiencePlayerHeight[i-1]] + [inExperiencePlayerHeight[i+1]]
+    } */
+    for player in 0..<experiencePlayerHeight.count{
+        if player % numberOfTeam.count == 0 {
+            experiencePlayerHeight[player].updateValue("Team Dragons", forKey: "Team")
+            experiencePlayerHeight[player].updateValue("March 17 , 1 p.m ", forKey: "Date")
+            teamDragons.append(experiencePlayerHeight[player])
+        }
     }
-    
+    //print("Done-Dragon-EX")
+    for player in 0..<inExperiencePlayerHeight.count{
+        if player % numberOfTeam.count == 0 {
+            //print(player)
+           //print("CHECKING1")
+            inExperiencePlayerHeight[player].updateValue("Team Dragons", forKey: "Team")
+            //print("CHECKING2")
+            inExperiencePlayerHeight[player].updateValue("March 17 , 1 p.m ", forKey: "Date")
+            //print("CHECKING3")
+            teamDragons.append(inExperiencePlayerHeight[player])
+            //print("CHECKING4")
+            //print(inExperiencePlayerHeight[player])
+            //print("\(teamDragons.count) asdasdasdasdsdasdasd")
+        }
+    }
+     //print("Done-Dragon-TEAM")
     return (teamDragons)
+    
 }
 
 //=================== 2. Calculated total players in Team Sharks ================//
-func calculatedPlayers4TeamSharks (experiencePlayers: [[String:String]],inExperiencePlayers: [[String:String]]) -> ([[String:String]]) {
+/* ===== It needs to be the collection of (sorted Experience with sorted Height player)
+            and (sorted No Experience with sorted Height player) ========= */
+func calculatedPlayers4TeamSharks (experiencePlayersWithHeight: [[String:String]],inExperiencePlayersWithHeight: [[String:String]]) -> ([[String:String]]) {
     
-    var teamSharks: [[String:String]] = []
-    var experiencePlayerHeight: [[String:String]] = experiencePlayers
-    var inExperiencePlayerHeight: [[String:String]] = inExperiencePlayers
     
-    for i in stride(from: 2, through: sortByExperienced(allPlayers: allPlayers).experiencedPlayer.count, by: sortByExperienced(allPlayers: allPlayers).experiencedPlayer.count / 3){
-        experiencePlayerHeight[i-1].updateValue("Team Sharks", forKey: "Team")
-        inExperiencePlayerHeight[i-1].updateValue("Team Sharks", forKey: "Team")
-        experiencePlayerHeight[i-1].updateValue("March 17 , 3 p.m ", forKey: "Date")
-        inExperiencePlayerHeight[i-1].updateValue("March 17 , 3 p.m ", forKey: "Date")
-        teamSharks += [experiencePlayerHeight[i-1]] + [inExperiencePlayerHeight[i-1]]
+    var experiencePlayerHeight: [[String:String]] = experiencePlayersWithHeight
+    var inExperiencePlayerHeight: [[String:String]] = inExperiencePlayersWithHeight
+    
+    for player in 0..<experiencePlayerHeight.count{
+        if player % numberOfTeam.count == 1 {
+            //print(player)
+            experiencePlayerHeight[player].updateValue("Team Sharks", forKey: "Team")
+            experiencePlayerHeight[player].updateValue("March 17 , 3 p.m ", forKey: "Date")
+            teamSharks.append(experiencePlayerHeight[player])
+            //print(teamSharks)
+     
+        }
     }
-    
-    return (teamSharks)
+     //print("Done-Sharks-Ex")
+    for player in 0..<inExperiencePlayerHeight.count{
+        if player % numberOfTeam.count == 1 {
+            inExperiencePlayerHeight[player].updateValue("Team Sharks", forKey: "Team")
+            inExperiencePlayerHeight[player].updateValue("March 17 , 3 p.m ", forKey: "Date")
+            teamSharks.append(experiencePlayerHeight[player])
+            }
+    }
+    //print("SHARKs-DoNEEEEEE")
+        return (teamSharks)
+        
 }
 
 //=================== 3. Calculated total players in Team Raptors ================//
-func calculatedPlayers4TeamRaptors (experiencePlayers: [[String:String]],inExperiencePlayers: [[String:String]]) -> ([[String:String]]) {
+func calculatedPlayers4TeamRaptors (experiencePlayersWithHeight: [[String:String]],inExperiencePlayersWithHeight: [[String:String]]) -> ([[String:String]]) {
     
-    var teamRaptors: [[String: String]] = []
-    var experiencePlayerHeight: [[String:String]] = experiencePlayers
-    var inExperiencePlayerHeight: [[String:String]] = inExperiencePlayers
     
-    for i in stride(from: 3, through: sortByExperienced(allPlayers: allPlayers).experiencedPlayer.count, by: sortByExperienced(allPlayers: allPlayers).experiencedPlayer.count / 3){
-        experiencePlayerHeight[i-1].updateValue("Team Raptors", forKey: "Team")
-        inExperiencePlayerHeight[i-3].updateValue("Team Raptors", forKey: "Team")
-        experiencePlayerHeight[i-1].updateValue("March 18 , 1 p.m ", forKey: "Date")
-        inExperiencePlayerHeight[i-3].updateValue("March 18 , 1 p.m ", forKey: "Date")
-        teamRaptors += [experiencePlayerHeight[i-1]] + [inExperiencePlayerHeight[i-3]]
+    var experiencePlayerHeight: [[String:String]] = experiencePlayersWithHeight
+    var inExperiencePlayerHeight: [[String:String]] = inExperiencePlayersWithHeight
+    
+    for player in 0..<experiencePlayerHeight.count{
+     if player % numberOfTeam.count == 2 {
+        //print(player)
+        experiencePlayerHeight[player].updateValue("Team Raptors", forKey: "Team")
+        experiencePlayerHeight[player].updateValue("March 18 , 1 p.m ", forKey: "Date")
+        teamRaptors.append(experiencePlayerHeight[player])
+        }
     }
-    
-    return (teamRaptors)
-}
 
+    for player in 0..<inExperiencePlayerHeight.count{
+     if player % numberOfTeam.count == 2 {
+        //print(player)
+        inExperiencePlayerHeight[player].updateValue("Team Raptors", forKey: "Team")
+        inExperiencePlayerHeight[player].updateValue("March 18 , 1 p.m ", forKey: "Date")
+        teamRaptors.append(inExperiencePlayerHeight[player])
+        }
+    }
+    //print("Raptor-DONE-HERE")
+    return (teamRaptors)
+    
+}
 //======================================================================//
 
-//================= Calculate the average height of each team ==================//
+//================= 4. Calculate the average height of each team ==================//
 
 func showAvgHeight (teamName : ([[String:String]])) -> Double{
     
@@ -248,7 +324,7 @@ func showAvgHeight (teamName : ([[String:String]])) -> Double{
 
 //======================================================================//
 
-/*================= Generates personalized letter to the guardians ========================//
+/*================= 5. Generates personalized letter to the guardians ========================//
  (6 letters from each team)*/
 func sendLetter2Guardian (teamName: [[String:String]]) {
     
@@ -272,34 +348,63 @@ func sendLetter2Guardian (teamName: [[String:String]]) {
 allPlayers[0]["Experience"] == "YES"
 allPlayers[3]["name"]
 allPlayers[7]["height"]
+//==Test case for extra player
+ /*let playerTest: [String: String] = [ /* String to String */
+    "name" : "Henry Trinh" ,
+    "height": "68.0",
+    "Experience" : "NO",
+    "Guardian Name" : "MYSELF"
+]
+allPlayers += [playerTest]
+ */
 
-// 2. Sort by experience
-let sortedPlayerss = sortByHeigh(player: sortByExperienced(allPlayers: allPlayers).experiencedPlayer)
-let inExpSorted = sortByHeigh(player: sortByExperienced(allPlayers: allPlayers).inExperiencedPlayer)
-
+// 2. Sort by experience (this step because i wanted to test out the value with different way to ensure i got the same thing that why I sortedByHeight here, sorry :) )
+let sortedPlayerss = sortByExperienced(allPlayers: allPlayers).experiencedPlayer
+let inExpSorted = sortByExperienced(allPlayers: allPlayers).inExperiencedPlayer
+print(sortedPlayerss.count)
+print(inExpSorted.count)
 // 3. Sort by the Height ( when we firgure out the number of experienced and un-experience, we contiue on sort those by their height)
-let sortedExPlayerByHeight = sortByHeigh(player: sortedPlayerss)
-let sortedUnExPlayerByHeight = sortByHeigh(player: inExpSorted)
+let sortedExPlayerByHeight = sortByHeighWithExp(player: sortedPlayerss )
+let sortedUnExPlayerByHeight = sortByHeighWithNoExp(player: inExpSorted )
+
+
+/* print those result to compare */
+print("Compare the experience(no height sorting and sorting):\n")
+print(sortedPlayerss)
+print("\n")
+print(sortedExPlayerByHeight)
+print("\n")
+print("============================================================")
+print("\n")
+print("Compare the NO-Experience(no height sorting and sorting in reversed order):\n")
+print(inExpSorted)
+print("\n")
+print(sortedUnExPlayerByHeight)
+print("\n")
+print("============================================================")
 
 // 4. Calculate players from each team with the same amount of experienced and un-experienced with the average within 1.5 inches, and We also inclued Team name, and practice time
-let teamDragons = calculatedPlayers4TeamDragons(experiencePlayers: sortedPlayerss, inExperiencePlayers: inExpSorted)
-let teamSharks = calculatedPlayers4TeamSharks(experiencePlayers: sortedPlayerss, inExperiencePlayers: inExpSorted)
-let teamRaptors = calculatedPlayers4TeamRaptors(experiencePlayers: sortedPlayerss, inExperiencePlayers: inExpSorted)
-
-print(teamDragons)
-//print(teamDragons[1]["Team"])
+let teamDragon = calculatedPlayers4TeamDragons(experiencePlayersWithHeight: sortedExPlayerByHeight,
+                                               inExperiencePlayersWithHeight: sortedUnExPlayerByHeight)
+let teamShark = calculatedPlayers4TeamSharks(experiencePlayersWithHeight: sortedExPlayerByHeight,
+                                             inExperiencePlayersWithHeight: sortedUnExPlayerByHeight)
+let teamRaptor = calculatedPlayers4TeamRaptors(experiencePlayersWithHeight: sortedExPlayerByHeight,
+                                               inExperiencePlayersWithHeight: sortedUnExPlayerByHeight)
+print("\n+++++++++++++++++++++++++++++++++")
+print(teamDragon)
+//print(teamDragon[1]["Team"])
 print("+++++++++++++++++++++++++++++++++")
-print(teamSharks)
+print(teamShark)
 //print(teamSharks[1]["Team"])
 print("+++++++++++++++++++++++++++++++++")
-print(teamRaptors)
+print(teamRaptor)
 //print(teamRaptors[1]["Team"])
 print("+++++++++++++++++++++++++++++++++")
 
 // 5. Calulate the average height of each team
-let teamDragonsAvg = showAvgHeight(teamName: teamDragons)
-let teamSharksAvg = showAvgHeight(teamName: teamSharks)
-let teamRaptorsAvg = showAvgHeight(teamName: teamRaptors)
+let teamDragonsAvg = showAvgHeight(teamName: teamDragon)
+let teamSharksAvg = showAvgHeight(teamName: teamShark)
+let teamRaptorsAvg = showAvgHeight(teamName: teamRaptor)
 
 print("\nThis is the Height Average for team Dragon:")
 print(teamDragonsAvg)
@@ -309,17 +414,17 @@ print("\nThis is the Height Average for team Sharks:")
 print(teamSharksAvg)
 
 // 6. Send letter to each guardian to inform the team name, player name, guardian name and practise time
-sendLetter2Guardian(teamName: teamDragons)
+sendLetter2Guardian(teamName: teamDragon)
 print("=============================================================")
-sendLetter2Guardian(teamName: teamSharks)
+sendLetter2Guardian(teamName: teamShark)
 print("=============================================================")
-sendLetter2Guardian(teamName: teamRaptors)
+sendLetter2Guardian(teamName: teamRaptor)
 print("=============================================================")
 
-// 7.stored collection 'letters' with 18 letters
-print("\n\n========== stored collection 'letters' with 18 letters ============")
-let letters = [sendLetter2Guardian(teamName: teamDragons),
-               sendLetter2Guardian(teamName: teamSharks),
-               sendLetter2Guardian(teamName: teamRaptors)]
-
+// 7.stored collection 'letters' with total numbers of letters
+let totalLetters = teamDragon.count + teamRaptor.count + teamShark.count
+print("\n\n========== stored collection 'letters' of \(totalLetters) letters ============")
+let letters = [sendLetter2Guardian(teamName: teamDragon),
+               sendLetter2Guardian(teamName: teamShark),
+               sendLetter2Guardian(teamName: teamRaptor)]
 //print(letters)
